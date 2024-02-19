@@ -7,6 +7,22 @@ import signal
 
 continue_reading = True
 
+# Setup LED
+LedPin = 11    # pin11
+#GPIO.setmode(GPIO.BOARD)       # Numbers pins by physical location - already done by MFRC522
+GPIO.setup(LedPin, GPIO.OUT)   # Set pin mode as output
+GPIO.output(LedPin, GPIO.HIGH) # Set pin to high(+3.3V) to off the led
+LedState = "off"                # Initialize to off
+
+def toggleLED():
+    if LedState == "off":
+        GPIO.output(LedPin, GPIO.LOW)  # led on
+        LedState = "on"
+    else:
+        GPIO.output(LedPin, GPIO.HIGH) # led off
+        LedState = "off"
+
+
 # Capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
     global continue_reading
@@ -56,5 +72,6 @@ while continue_reading:
         if status == MIFAREReader.MI_OK:
             MIFAREReader.MFRC522_Read(8)
             MIFAREReader.MFRC522_StopCrypto1()
+            toggleLED # Toggle the LED
         else:
             print("Authentication error")
